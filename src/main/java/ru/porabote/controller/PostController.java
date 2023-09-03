@@ -9,6 +9,8 @@ import ru.porabote.service.PostService;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -21,36 +23,22 @@ public class PostController {
   }
 
   @GetMapping
-  public void all(HttpServletResponse response) throws IOException {
-    response.setContentType(APPLICATION_JSON);
-    final var data = service.all();
-    final var gson = new Gson();
-    response.getWriter().print(gson.toJson(data));
+  public ConcurrentHashMap<Long, Post> all() {
+    return service.all();
   }
 
   @GetMapping("/{id}")
-  public void getById(@PathVariable long id, HttpServletResponse response) throws IOException {
-    response.setContentType(APPLICATION_JSON);
-    final var gson = new Gson();
-    final var post = this.service.getById(id);
-    response.getWriter().print(gson.toJson(post));
+  public Post getById(@PathVariable long id) throws IOException {
+    return service.getById(id);
   }
 
   @PostMapping
-  public void save(@RequestBody Reader body, HttpServletResponse response) throws IOException {
-    response.setContentType(APPLICATION_JSON);
-    final var gson = new Gson();
-    final var post = gson.fromJson(body, Post.class);
-    final var data = service.save(post);
-    response.getWriter().print(gson.toJson(data));
+  public Post save(@RequestBody Post post) throws IOException {
+    return service.save(post);
   }
 
   @DeleteMapping("/{id}")
-  public void removeById(@PathVariable long id, HttpServletResponse response) throws IOException {
-    response.setContentType(APPLICATION_JSON);
-    final var gson = new Gson();
-    final var post = this.service.getById(id);
+  public void removeById(@PathVariable long id) throws IOException {
     service.removeById(id);
-    response.getWriter().print(gson.toJson(post));
   }
 }
